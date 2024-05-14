@@ -34,7 +34,7 @@ public class Main {
     }
 
     private static void growVcpu() throws IOException {
-        String monitorPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
+        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
         QMPConnection connection = new QMPConnection(monitorPath);
         DeviceAddCommand.Arguments arguments = new DeviceAddCommand.Arguments("plugged-cpu1", "host-x86_64-cpu", 1);
 
@@ -42,19 +42,19 @@ public class Main {
     }
 
     private static void shrinkVcpu(String id) throws IOException{
-        String monitorPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
+        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
         QMPConnection connection = new QMPConnection(monitorPath);
     }
 
     private static void growMemory() throws IOException {
-        String monitorPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
+        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
         QMPConnection connection = new QMPConnection(monitorPath);
         ObjectAddCommand.Arguments arguments = new ObjectAddCommand.Arguments("plugged-mem1", "memory-backend-ram", giga);
         connection.call(new ObjectAddCommand(arguments));
     }
 
     private static void shrinkMemory(String id) throws IOException {
-        String monitorPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
+        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
         QMPConnection connection = new QMPConnection(monitorPath);
     }
 }
