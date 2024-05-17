@@ -2,4 +2,7 @@
 
 ### Build & Run
 - maven clean -> maven install
-- Execute java -jar qemu-monitor-java-client.jar command in Linux machine installed QEMU 
+- Run the command below in Linux machine installed QEMU
+```shell
+java -jar qemu-monitor-java-client-1.0-SNAPSHOT.jar
+```
