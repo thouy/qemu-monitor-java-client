@@ -50,7 +50,6 @@ public class Main {
     }
 
     private static void growVcpu(QMPConnection connection) throws IOException {
-        connection.call(new QueryHotpluggableCpusCommand("query-hotplugged-cpu", null));
         DeviceAddCommand.Arguments arguments = DeviceAddCommand.Arguments.builder()
                 .id("plugged-cpu1")
                 .driver("host-x86_64-cpu")
@@ -61,16 +60,16 @@ public class Main {
 
         DeviceAddCommand.Response result = connection.invoke(new DeviceAddCommand(arguments));
         if (result.isError()) {
-            System.out.println("error desc : " + result.getError().desc);
+            System.out.printf("     Error message : %s\n", result.getError().desc);
         }
     }
 
     private static void queryHotpluggableVcpu(QMPConnection connection) throws IOException {
         QueryHotpluggableCpusCommand.Response result
-                = connection.invoke(new QueryHotpluggableCpusCommand("query-hotplugged-cpu", null));
+                = connection.invoke(new QueryHotpluggableCpusCommand());
         List<HotpluggableCpus> hotpluggableCpusList = result.getResult();
         hotpluggableCpusList.forEach(cpu -> {
-            System.out.printf("Socket ID : %s / type : %s", cpu.getProps().getSocketId(), cpu.getType());
+            System.out.printf("     Socket ID : %s / type : %s", cpu.getProps().getSocketId(), cpu.getType());
             if (cpu.getQomPath() != null)
                 System.out.printf(" / QOM Path : %s", cpu.getQomPath());
             System.out.println();

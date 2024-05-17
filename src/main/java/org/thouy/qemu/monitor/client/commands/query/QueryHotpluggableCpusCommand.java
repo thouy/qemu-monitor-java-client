@@ -45,8 +45,8 @@ public class QueryHotpluggableCpusCommand extends QemuMonitorCommand<QueryHotplu
     public QueryHotpluggableCpusCommand(String command) {
         super(command, null, null);
     }
-    public QueryHotpluggableCpusCommand(String command, Arguments arguments) {
-        super("query-hotpluggable-cpus", arguments, Response.class);
+    public QueryHotpluggableCpusCommand() {
+        super("query-hotpluggable-cpus", null, Response.class);
     }
 
 }

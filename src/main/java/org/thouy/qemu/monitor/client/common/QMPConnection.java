@@ -98,7 +98,6 @@ public class QMPConnection {
      * @throws IOException
      */
     public <Response extends QemuMonitorResponse<?>> Response invoke(QemuMonitorCommand<?, Response> command) throws IOException {
-
         String commandStr = objectMapper.writeValueAsString(command);
         System.out.println("input : " + commandStr);
         output.write(commandStr);
@@ -121,7 +120,7 @@ public class QMPConnection {
             String line = input.readLine();
             if (line == null)
                 throw new EOFException();
-            System.out.println("output : " + line);
+            //System.out.println("output : " + line);
             JsonNode node = objectMapper.readTree(line);
             if (node.get("event") != null)
                 continue;
