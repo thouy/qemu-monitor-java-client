@@ -1,10 +1,14 @@
 package org.thouy.qemu.monitor.client;
 
 import org.thouy.qemu.monitor.client.commands.DeviceAddCommand;
+import org.thouy.qemu.monitor.client.commands.DeviceDelCommand;
 import org.thouy.qemu.monitor.client.commands.ObjectAddCommand;
+import org.thouy.qemu.monitor.client.commands.query.QueryHotpluggableCpusCommand;
 import org.thouy.qemu.monitor.client.common.QMPConnection;
+import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Main {
 
@@ -27,34 +31,60 @@ public class Main {
     static long mega = kilo * kilo;
     static long giga = mega * mega;
     static long tera = giga * giga;
+    static String unixDomainSocketPath = "/tmp/unix-domain.socket";
 
-    public static void main(String[] args) throws IOException {
-
-        growVcpu();
+    /**
+     * qemu-monitor-java-client test
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException, InterruptedException {
+        QMPConnection connection = new QMPConnection(unixDomainSocketPath);
+        queryHotpluggableVcpu(connection);
+        growVcpu(connection);
+        queryHotpluggableVcpu(connection);
+        connection.close();
     }
 
-    private static void growVcpu() throws IOException {
-        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
-        QMPConnection connection = new QMPConnection(monitorPath);
-        DeviceAddCommand.Arguments arguments = new DeviceAddCommand.Arguments("plugged-cpu1", "host-x86_64-cpu", 1);
+    private static void growVcpu(QMPConnection connection) throws IOException {
+        connection.call(new QueryHotpluggableCpusCommand("query-hotplugged-cpu", null));
+        DeviceAddCommand.Arguments arguments = DeviceAddCommand.Arguments.builder()
+                .id("plugged-cpu1")
+                .driver("host-x86_64-cpu")
+                .socketId(1)
+                .coreId(0)
+                .threadId(0)
+                .build();
 
-        connection.call(new DeviceAddCommand(arguments));
+        DeviceAddCommand.Response result = connection.invoke(new DeviceAddCommand(arguments));
+        if (result.isError()) {
+            System.out.println("error desc : " + result.getError().desc);
+        }
     }
 
-    private static void shrinkVcpu(String id) throws IOException{
-        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
-        QMPConnection connection = new QMPConnection(monitorPath);
+    private static void queryHotpluggableVcpu(QMPConnection connection) throws IOException {
+        QueryHotpluggableCpusCommand.Response result
+                = connection.invoke(new QueryHotpluggableCpusCommand("query-hotplugged-cpu", null));
     }
 
-    private static void growMemory() throws IOException {
-        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
-        QMPConnection connection = new QMPConnection(monitorPath);
-        ObjectAddCommand.Arguments arguments = new ObjectAddCommand.Arguments("plugged-mem1", "memory-backend-ram", giga);
+    private static void shrinkVcpu(QMPConnection connection) throws IOException{
+        DeviceDelCommand.Arguments arguments = DeviceDelCommand.Arguments.builder()
+                .id("plugged-cpu1")
+                .build();
+
+        connection.call(new DeviceDelCommand(arguments));
+    }
+
+    private static void growMemory(QMPConnection connection) throws IOException {
+        ObjectAddCommand.Arguments arguments = ObjectAddCommand.Arguments.builder()
+                .id("plugged-mem1")
+                .qomType("memory-backend-ram")
+                .size(giga)
+                .build();
+
         connection.call(new ObjectAddCommand(arguments));
     }
 
-    private static void shrinkMemory(String id) throws IOException {
-        String monitorPath = "/root/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
-        QMPConnection connection = new QMPConnection(monitorPath);
+    private static void shrinkMemory(QMPConnection connection) throws IOException {
     }
 }
