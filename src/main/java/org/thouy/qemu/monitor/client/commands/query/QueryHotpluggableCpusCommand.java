@@ -41,10 +41,6 @@ public class QueryHotpluggableCpusCommand extends QemuMonitorCommand<QueryHotplu
      */
     public static class Response extends QemuMonitorResponse<List<HotpluggableCpus>> {
     }
-
-    public QueryHotpluggableCpusCommand(String command) {
-        super(command, null, null);
-    }
     public QueryHotpluggableCpusCommand() {
         super("query-hotpluggable-cpus", null, Response.class);
     }
