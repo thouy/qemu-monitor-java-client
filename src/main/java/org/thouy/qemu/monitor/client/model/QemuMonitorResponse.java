@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class QemuMonitorResponse<T> {
 
-    @JsonProperty("return") public T _return;
-    @JsonProperty("error") public QemuMonitorError error;
+    @JsonProperty("return") private T _return;
+    @JsonProperty("error") private QemuMonitorError error;
 
     public T getResult() {
         return _return;

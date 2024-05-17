@@ -1,6 +1,7 @@
 package org.thouy.qemu.monitor.client.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
 
 /**
@@ -12,12 +13,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *          "node-id": 0,
  *       }
  */
+@Getter
 public class CpuProperties {
 
-    @JsonProperty("socket-id") public int socketId;
-    @JsonProperty("core-id") public int coreId;
-    @JsonProperty("thread-id") public int threadId;
-    @JsonProperty("node-id") public int nodeId;
+    @JsonProperty("socket-id") private int socketId;
+    @JsonProperty("core-id") private int coreId;
+    @JsonProperty("thread-id") private int threadId;
+    @JsonProperty("node-id") private int nodeId;
 
 
 

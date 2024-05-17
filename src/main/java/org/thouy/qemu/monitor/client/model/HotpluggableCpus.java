@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import lombok.Getter;
 
 
 /**
@@ -16,10 +17,11 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
  *       }
  */
 @JsonInclude(Include.NON_NULL)
+@Getter
 public class HotpluggableCpus {
 
-    @JsonProperty("props") public CpuProperties props;
-    @JsonProperty("vcpus-count") public int vcpusCount;
-    @JsonProperty("qom-path") public String gomPath;
-    @JsonProperty("type") public String type;
+    @JsonProperty("props") private CpuProperties props;
+    @JsonProperty("vcpus-count") private int vcpusCount;
+    @JsonProperty("qom-path") private String qomPath;
+    @JsonProperty("type") private String type;
 }

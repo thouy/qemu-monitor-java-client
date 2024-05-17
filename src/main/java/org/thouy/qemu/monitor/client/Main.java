@@ -5,9 +5,11 @@ import org.thouy.qemu.monitor.client.commands.DeviceDelCommand;
 import org.thouy.qemu.monitor.client.commands.ObjectAddCommand;
 import org.thouy.qemu.monitor.client.commands.query.QueryHotpluggableCpusCommand;
 import org.thouy.qemu.monitor.client.common.QMPConnection;
+import org.thouy.qemu.monitor.client.model.HotpluggableCpus;
 import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -31,7 +33,8 @@ public class Main {
     static long mega = kilo * kilo;
     static long giga = mega * mega;
     static long tera = giga * giga;
-    static String unixDomainSocketPath = "/tmp/unix-domain.socket";
+    //static String unixDomainSocketPath = "/tmp/unix-domain.socket";
+    static String unixDomainSocketPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
 
     /**
      * qemu-monitor-java-client test
@@ -65,6 +68,14 @@ public class Main {
     private static void queryHotpluggableVcpu(QMPConnection connection) throws IOException {
         QueryHotpluggableCpusCommand.Response result
                 = connection.invoke(new QueryHotpluggableCpusCommand("query-hotplugged-cpu", null));
+        List<HotpluggableCpus> hotpluggableCpusList = result.getResult();
+        hotpluggableCpusList.forEach(cpu -> {
+            System.out.printf("Socket ID : %s / type : %s", cpu.getProps().getSocketId(), cpu.getType());
+            if (cpu.getQomPath() != null)
+                System.out.printf(" / QOM Path : %s", cpu.getQomPath());
+            System.out.println();
+        });
+
     }
 
     private static void shrinkVcpu(QMPConnection connection) throws IOException{
