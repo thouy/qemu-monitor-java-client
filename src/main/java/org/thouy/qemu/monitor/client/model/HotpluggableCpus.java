@@ -16,8 +16,8 @@ import lombok.Getter;
  *          "type": "host-x86_64-cpu"
  *       }
  */
-@JsonInclude(Include.NON_NULL)
 @Getter
+@JsonInclude(Include.NON_NULL)
 public class HotpluggableCpus {
 
     @JsonProperty("props") private CpuProperties props;

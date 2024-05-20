@@ -4,8 +4,11 @@ import org.thouy.qemu.monitor.client.commands.DeviceAddCommand;
 import org.thouy.qemu.monitor.client.commands.DeviceDelCommand;
 import org.thouy.qemu.monitor.client.commands.ObjectAddCommand;
 import org.thouy.qemu.monitor.client.commands.query.QueryHotpluggableCpusCommand;
+import org.thouy.qemu.monitor.client.commands.query.QueryMemoryDevices;
 import org.thouy.qemu.monitor.client.common.QMPConnection;
 import org.thouy.qemu.monitor.client.model.HotpluggableCpus;
+import org.thouy.qemu.monitor.client.model.MemoryDevices;
+import org.thouy.qemu.monitor.client.model.MemoryProperties;
 import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
 
 import java.io.IOException;
@@ -96,5 +99,16 @@ public class Main {
     }
 
     private static void shrinkMemory(QMPConnection connection) throws IOException {
+    }
+
+    private static void queryMemoryDevices(QMPConnection connection) throws IOException {
+        QueryMemoryDevices.Response result = connection.invoke(new QueryMemoryDevices());
+        List<MemoryDevices> memoryList = result.getResult();
+        memoryList.forEach(memoryRow -> {
+            MemoryProperties memory = memoryRow.getData();
+            System.out.printf("     device ID : %s", memory.getDeviceId());
+            System.out.printf("     memdev : %s", memory.getMemdev());
+        });
+
     }
 }

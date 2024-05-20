@@ -8,9 +8,7 @@ import java.util.List;
 
 public class QueryHotpluggableCpusCommand extends QemuMonitorCommand<QueryHotpluggableCpusCommand.Arguments, QueryHotpluggableCpusCommand.Response> {
 
-    public static class Arguments {
-
-    }
+    public static class Arguments {}
 
     /**
      *  e.g.
@@ -39,8 +37,8 @@ public class QueryHotpluggableCpusCommand extends QemuMonitorCommand<QueryHotplu
      *          ]
      *      }
      */
-    public static class Response extends QemuMonitorResponse<List<HotpluggableCpus>> {
-    }
+    public static class Response extends QemuMonitorResponse<List<HotpluggableCpus>> {}
+
     public QueryHotpluggableCpusCommand() {
         super("query-hotpluggable-cpus", null, Response.class);
     }
