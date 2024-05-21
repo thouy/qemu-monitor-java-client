@@ -29,6 +29,8 @@ public class QMPConnection {
 
     private final QemuMonitorGreeting greeting;
 
+    private boolean isDebug = false;
+
 
     /**
      * Constructor for JAVA Socket
@@ -79,7 +81,14 @@ public class QMPConnection {
         invoke(new QmpCapabilitiesCommand());
     }
 
-
+    /**
+     * Invoke and return Object consisted of QMP command execution result
+     * @param command
+     * @return
+     * @param <Result>
+     * @param <Response>
+     * @throws IOException
+     */
     public <Result, Response extends QemuMonitorResponse<Result>> Result call(QemuMonitorCommand<?, Response> command) throws IOException {
         return invoke(command).getResult();
     }
@@ -99,7 +108,8 @@ public class QMPConnection {
      */
     public <Response extends QemuMonitorResponse<?>> Response invoke(QemuMonitorCommand<?, Response> command) throws IOException {
         String commandStr = objectMapper.writeValueAsString(command);
-        System.out.println("input : " + commandStr);
+        if (isDebug)
+            System.out.println("input : " + commandStr);
         output.write(commandStr);
         output.write(LINE_FEED);
         output.flush();
@@ -120,7 +130,8 @@ public class QMPConnection {
             String line = input.readLine();
             if (line == null)
                 throw new EOFException();
-            //System.out.println("output : " + line);
+            if (isDebug)
+                System.out.println("output : " + line);
             JsonNode node = objectMapper.readTree(line);
             if (node.get("event") != null)
                 continue;

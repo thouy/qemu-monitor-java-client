@@ -13,7 +13,6 @@ public class ObjectAddCommand extends QemuMonitorCommand<ObjectAddCommand.Argume
         @JsonProperty("id") public String id;
         @JsonProperty("qom-type") public String qomType;
         @JsonProperty("size") public long size;
-
     }
 
     public static class Response extends QemuMonitorResponse<Void> {

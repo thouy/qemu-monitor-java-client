@@ -44,13 +44,53 @@ public class Main {
      * @param args
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
         QMPConnection connection = new QMPConnection(unixDomainSocketPath);
-        queryHotpluggableVcpu(connection);
-        growVcpu(connection);
-        queryHotpluggableVcpu(connection);
+
+        System.out.println("Welcome to qemu-monitor-java-client CLI. If you need some help, please enter help.\n");
+
+        while (true) {
+            System.out.print("\ninput : ");
+            String inputString = scanner.nextLine();
+
+            if (inputString.equals("quit")) {
+                System.out.println("See you again :)");
+                break;
+            }
+
+
+            switch(inputString) {
+                case "query-hotpluggable-cpus" :
+                    queryHotpluggableVcpu(connection);
+                    break;
+                case "cpu-add" :
+                    growVcpu(connection);
+                    break;
+                case "query-memory-devices" :
+                    queryMemoryDevices(connection);
+                    break;
+                case "memory-add" :
+                    growMemory(connection);
+                    break;
+                case "help" :
+                    System.out.println("[Notice] Command list");
+                    System.out.println("    - query-hotpluggable-cpus");
+                    System.out.println("    - cpu-add");
+                    System.out.println("    - query-memory-devices");
+                    System.out.println("    - memory-add");
+                    System.out.println("    - help");
+                    System.out.println("    - quit");
+                    break;
+                default :
+                    System.out.println("[Notice] Invalid command. Please enter valid command.");
+                    break;
+            }
+        }
+
         connection.close();
     }
+
 
     private static void growVcpu(QMPConnection connection) throws IOException {
         DeviceAddCommand.Arguments arguments = DeviceAddCommand.Arguments.builder()
@@ -89,13 +129,22 @@ public class Main {
     }
 
     private static void growMemory(QMPConnection connection) throws IOException {
+        String objectId = "plugged-mem1";
+        String deviceId = "dimm1";
         ObjectAddCommand.Arguments arguments = ObjectAddCommand.Arguments.builder()
-                .id("plugged-mem1")
+                .id(objectId)
                 .qomType("memory-backend-ram")
                 .size(giga)
                 .build();
-
-        connection.call(new ObjectAddCommand(arguments));
+        ObjectAddCommand.Response objectAddResult = connection.invoke(new ObjectAddCommand(arguments));
+        if (!objectAddResult.isError()) {
+            DeviceAddCommand.Arguments devArguments = DeviceAddCommand.Arguments.builder()
+                    .id(deviceId)
+                    .memdev(objectId)
+                    .driver("pc-dimm")
+                    .build();
+            DeviceAddCommand.Response deviceAddResult = connection.invoke(new DeviceAddCommand(devArguments));
+        }
     }
 
     private static void shrinkMemory(QMPConnection connection) throws IOException {
@@ -106,8 +155,8 @@ public class Main {
         List<MemoryDevices> memoryList = result.getResult();
         memoryList.forEach(memoryRow -> {
             MemoryProperties memory = memoryRow.getData();
-            System.out.printf("     device ID : %s", memory.getDeviceId());
-            System.out.printf("     memdev : %s", memory.getMemdev());
+            System.out.printf("     Device ID : %s / memdev : %s", memory.getDeviceId(), memory.getMemdev());
+            System.out.println();
         });
 
     }
