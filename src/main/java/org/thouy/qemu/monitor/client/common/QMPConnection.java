@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnixDomainSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 public class QMPConnection {
 
@@ -29,7 +30,7 @@ public class QMPConnection {
 
     private final QemuMonitorGreeting greeting;
 
-    private boolean isDebug = false;
+    private boolean isDebug = true;
 
 
     /**
@@ -109,7 +110,7 @@ public class QMPConnection {
     public <Response extends QemuMonitorResponse<?>> Response invoke(QemuMonitorCommand<?, Response> command) throws IOException {
         String commandStr = objectMapper.writeValueAsString(command);
         if (isDebug)
-            System.out.println("input : " + commandStr);
+            System.out.printf("[%s  DEBUG]  >> input  : %s\n", new Date(System.currentTimeMillis()), commandStr);
         output.write(commandStr);
         output.write(LINE_FEED);
         output.flush();
@@ -127,12 +128,12 @@ public class QMPConnection {
      */
     private <T>T read(Class<T> type) throws IOException {
         for(;;) {
-            String line = input.readLine();
-            if (line == null)
+            String output = input.readLine();
+            if (output == null)
                 throw new EOFException();
             if (isDebug)
-                System.out.println("output : " + line);
-            JsonNode node = objectMapper.readTree(line);
+                System.out.printf("[%s  DEBUG] >>> output : %s\n", new Date(System.currentTimeMillis()), output);
+            JsonNode node = objectMapper.readTree(output);
             if (node.get("event") != null)
                 continue;
             return objectMapper.treeToValue(node, type);

@@ -12,9 +12,9 @@ public class DeviceAddCommand extends QemuMonitorCommand<DeviceAddCommand.Argume
     public static class Arguments {
         @JsonProperty("id") public String id;
         @JsonProperty("driver") public String driver;
-        @JsonProperty("socket-id") public int socketId;
-        @JsonProperty("core-id") public int coreId;
-        @JsonProperty("thread-id") public int threadId;
+        @JsonProperty("socket-id") public Integer socketId;
+        @JsonProperty("core-id") public Integer coreId;
+        @JsonProperty("thread-id") public Integer threadId;
         @JsonProperty("memdev") public String memdev;
     }
 

@@ -3,6 +3,7 @@ package org.thouy.qemu.monitor.client;
 import org.thouy.qemu.monitor.client.commands.DeviceAddCommand;
 import org.thouy.qemu.monitor.client.commands.DeviceDelCommand;
 import org.thouy.qemu.monitor.client.commands.ObjectAddCommand;
+import org.thouy.qemu.monitor.client.commands.ObjectDelCommand;
 import org.thouy.qemu.monitor.client.commands.query.QueryHotpluggableCpusCommand;
 import org.thouy.qemu.monitor.client.commands.query.QueryMemoryDevices;
 import org.thouy.qemu.monitor.client.common.QMPConnection;
@@ -17,27 +18,12 @@ import java.util.Scanner;
 
 public class Main {
 
-    /*
-    public static void main(String[] args) throws IOException {
-
-        String monitorPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
-
-        String commandPrefix = "{\"execute\":\"qmp_capabilities\"}";
-        String qmpCommand =
-                "{\"execute\": \"device_add\", \"arguments\": {\"socket-id\": 1, \"driver\": \"host-x86_64-cpu\", \"id\": \"hotplug-cpu-2\", \"core-id\": 0, \"thread-id\": 0}}";
-        String[] command = new String[]{"/bin/sh", "-c",
-                "echo '" + commandPrefix + qmpCommand + "' | /usr/bin/nc -U " + monitorPath};
-
-        QEMUMonitorUtils.executeCommand(command);
-    }
-    */
-
     static long kilo = 1024;
-    static long mega = kilo * kilo;
-    static long giga = mega * mega;
-    static long tera = giga * giga;
-    //static String unixDomainSocketPath = "/tmp/unix-domain.socket";
-    static String unixDomainSocketPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
+    static long mega = kilo * kilo;  // 1,048,576
+    static long giga = mega * kilo;  // 1,073,741,824
+    static long tera = giga * kilo;  // 1,099,511,627,776
+    static String unixDomainSocketPath = "/tmp/unix-domain.socket";
+
 
     /**
      * qemu-monitor-java-client test
@@ -59,28 +45,39 @@ public class Main {
                 break;
             }
 
-
-            switch(inputString) {
+            String[] commandInput = inputString.split("\\s{1}");
+            String command = commandInput[0];
+            switch(command) {
                 case "query-hotpluggable-cpus" :
                     queryHotpluggableVcpu(connection);
                     break;
                 case "cpu-add" :
-                    growVcpu(connection);
+                    if (commandInput.length != 2) {
+                        System.out.println("[Notice] Invalid cpu option. Please enter cpuId");
+                    }
+                    String cpuId = commandInput[1];
+
+                    growVcpu(connection, cpuId);
                     break;
                 case "query-memory-devices" :
                     queryMemoryDevices(connection);
                     break;
                 case "memory-add" :
-                    growMemory(connection);
+                    if (commandInput.length != 3) {
+                        System.out.println("[Notice] Invalid memory option. Please enter objectId, deviceId");
+                    }
+                    String objectId = commandInput[1];
+                    String deviceId = commandInput[2];
+                    growMemory(connection, objectId, deviceId);
                     break;
                 case "help" :
                     System.out.println("[Notice] Command list");
-                    System.out.println("    - query-hotpluggable-cpus");
-                    System.out.println("    - cpu-add");
-                    System.out.println("    - query-memory-devices");
-                    System.out.println("    - memory-add");
-                    System.out.println("    - help");
-                    System.out.println("    - quit");
+                    System.out.println("    query-hotpluggable-cpus               Query cpu devices");
+                    System.out.println("    cpu-add <cpuId>                       Hot-plug cpu device");
+                    System.out.println("    query-memory-devices                  Query hot-plugged memory devices");
+                    System.out.println("    memory-add <objectId> <deviceId>      Hot-plug memory device");
+                    System.out.println("    help                                  Show command list");
+                    System.out.println("    quit                                  Quit CLI");
                     break;
                 default :
                     System.out.println("[Notice] Invalid command. Please enter valid command.");
@@ -92,9 +89,10 @@ public class Main {
     }
 
 
-    private static void growVcpu(QMPConnection connection) throws IOException {
+    private static void growVcpu(QMPConnection connection, String cpuId) throws IOException {
+        //String cpuId = "plugged-cpu1";
         DeviceAddCommand.Arguments arguments = DeviceAddCommand.Arguments.builder()
-                .id("plugged-cpu1")
+                .id(cpuId)
                 .driver("host-x86_64-cpu")
                 .socketId(1)
                 .coreId(0)
@@ -128,22 +126,33 @@ public class Main {
         connection.call(new DeviceDelCommand(arguments));
     }
 
-    private static void growMemory(QMPConnection connection) throws IOException {
-        String objectId = "plugged-mem1";
-        String deviceId = "dimm1";
+    private static void growMemory(QMPConnection connection, String objectId, String deviceId) throws IOException {
+        //String objectId = "plugged-mem1";
+        //String deviceId = "dimm1";
         ObjectAddCommand.Arguments arguments = ObjectAddCommand.Arguments.builder()
                 .id(objectId)
                 .qomType("memory-backend-ram")
                 .size(giga)
                 .build();
         ObjectAddCommand.Response objectAddResult = connection.invoke(new ObjectAddCommand(arguments));
-        if (!objectAddResult.isError()) {
+        if(objectAddResult.isError()) {
+            System.out.printf("     Error message : %s\n", objectAddResult.getError().desc);
+        } else {
             DeviceAddCommand.Arguments devArguments = DeviceAddCommand.Arguments.builder()
                     .id(deviceId)
                     .memdev(objectId)
                     .driver("pc-dimm")
                     .build();
             DeviceAddCommand.Response deviceAddResult = connection.invoke(new DeviceAddCommand(devArguments));
+            if (deviceAddResult.isError()) {
+                System.out.printf("     Error message : %s\n", deviceAddResult.getError().desc);
+                ObjectDelCommand.Arguments objDelArguments = ObjectDelCommand.Arguments.builder()
+                        .id(objectId)
+                        .build();
+                ObjectDelCommand.Response objectDelResult = connection.invoke(new ObjectDelCommand(objDelArguments));
+                if (objectDelResult.isError())
+                    System.out.printf("     Error message : %s\n", objectDelResult.getError().desc);
+            }
         }
     }
 

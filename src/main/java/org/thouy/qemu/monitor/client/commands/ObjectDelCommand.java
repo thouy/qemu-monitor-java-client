@@ -6,19 +6,17 @@ import lombok.Builder;
 import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ObjectAddCommand extends QemuMonitorCommand<ObjectAddCommand.Arguments, ObjectAddCommand.Response> {
+public class ObjectDelCommand extends QemuMonitorCommand<ObjectDelCommand.Arguments, ObjectDelCommand.Response> {
 
     @Builder
     public static class Arguments {
         @JsonProperty("id") public String id;
-        @JsonProperty("qom-type") public String qomType;
-        @JsonProperty("size") public long size;
     }
 
     public static class Response extends QemuMonitorResponse<Void> {
     }
 
-    public ObjectAddCommand(Arguments arguments) {
-        super("object-add", arguments, Response.class);
+    public ObjectDelCommand(Arguments arguments) {
+        super("object-del", arguments, Response.class);
     }
 }
