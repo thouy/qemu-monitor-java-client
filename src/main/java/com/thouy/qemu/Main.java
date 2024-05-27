@@ -1,16 +1,15 @@
-package org.thouy.qemu.monitor.client;
+package com.thouy.qemu;
 
-import org.thouy.qemu.monitor.client.commands.DeviceAddCommand;
-import org.thouy.qemu.monitor.client.commands.DeviceDelCommand;
-import org.thouy.qemu.monitor.client.commands.ObjectAddCommand;
-import org.thouy.qemu.monitor.client.commands.ObjectDelCommand;
-import org.thouy.qemu.monitor.client.commands.query.QueryHotpluggableCpusCommand;
-import org.thouy.qemu.monitor.client.commands.query.QueryMemoryDevices;
-import org.thouy.qemu.monitor.client.common.QMPConnection;
-import org.thouy.qemu.monitor.client.model.HotpluggableCpus;
-import org.thouy.qemu.monitor.client.model.MemoryDevices;
-import org.thouy.qemu.monitor.client.model.MemoryProperties;
-import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
+import com.thouy.qemu.commands.DeviceDelCommand;
+import com.thouy.qemu.common.QMPConnection;
+import com.thouy.qemu.commands.DeviceAddCommand;
+import com.thouy.qemu.commands.ObjectAddCommand;
+import com.thouy.qemu.commands.ObjectDelCommand;
+import com.thouy.qemu.commands.query.QueryHotpluggableCpusCommand;
+import com.thouy.qemu.commands.query.QueryMemoryDevices;
+import com.thouy.qemu.model.HotpluggableCpus;
+import com.thouy.qemu.model.MemoryDevices;
+import com.thouy.qemu.model.MemoryProperties;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,8 +21,8 @@ public class Main {
     static long mega = kilo * kilo;  // 1,048,576
     static long giga = mega * kilo;  // 1,073,741,824
     static long tera = giga * kilo;  // 1,099,511,627,776
-    static String unixDomainSocketPath = "/tmp/unix-domain.socket";
-
+    //static String unixDomainSocketPath = "/tmp/unix-domain.socket";
+    static String unixDomainSocketPath = "/var/run/cloudit/7dce683a-e49b-45ac-a8f4-0a231639a7cc/1hv37zkhmezp1.socket";
 
     /**
      * qemu-monitor-java-client test

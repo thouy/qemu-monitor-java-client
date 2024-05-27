@@ -1,21 +1,15 @@
-package org.thouy.qemu.monitor.client.common;
+package com.thouy.qemu.common;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
-import org.thouy.qemu.monitor.client.commands.QemuMonitorCommand;
-import org.thouy.qemu.monitor.client.commands.QmpCapabilitiesCommand;
-import org.thouy.qemu.monitor.client.model.QemuMonitorGreeting;
-import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
+import com.thouy.qemu.commands.QemuMonitorCommand;
+import com.thouy.qemu.commands.QmpCapabilitiesCommand;
+import com.thouy.qemu.model.QemuMonitorGreeting;
+import com.thouy.qemu.model.QemuMonitorResponse;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnixDomainSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 

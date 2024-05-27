@@ -1,6 +1,6 @@
-package org.thouy.qemu.monitor.client.commands;
+package com.thouy.qemu.commands;
 
-import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
+import com.thouy.qemu.model.QemuMonitorResponse;
 
 public class QmpCapabilitiesCommand extends QemuMonitorCommand<Void, QmpCapabilitiesCommand.Response> {
 

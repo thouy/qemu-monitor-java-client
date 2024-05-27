@@ -1,8 +1,8 @@
-package org.thouy.qemu.monitor.client.commands.query;
+package com.thouy.qemu.commands.query;
 
-import org.thouy.qemu.monitor.client.commands.QemuMonitorCommand;
-import org.thouy.qemu.monitor.client.model.HotpluggableCpus;
-import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
+import com.thouy.qemu.commands.QemuMonitorCommand;
+import com.thouy.qemu.model.HotpluggableCpus;
+import com.thouy.qemu.model.QemuMonitorResponse;
 
 import java.util.List;
 

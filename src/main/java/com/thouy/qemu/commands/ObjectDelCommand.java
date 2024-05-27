@@ -1,9 +1,9 @@
-package org.thouy.qemu.monitor.client.commands;
+package com.thouy.qemu.commands;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thouy.qemu.model.QemuMonitorResponse;
 import lombok.Builder;
-import org.thouy.qemu.monitor.client.model.QemuMonitorResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ObjectDelCommand extends QemuMonitorCommand<ObjectDelCommand.Arguments, ObjectDelCommand.Response> {

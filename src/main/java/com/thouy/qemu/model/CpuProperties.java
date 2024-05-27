@@ -1,4 +1,4 @@
-package org.thouy.qemu.monitor.client.model;
+package com.thouy.qemu.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
