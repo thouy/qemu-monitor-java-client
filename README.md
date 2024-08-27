@@ -1,5 +1,7 @@
 # qemu-monitor-java-client
 
+![diagram](./diagram.png)
+
 ## Build & Run
 - maven clean -> maven install
 - Run the command below in Linux machine installed QEMU
